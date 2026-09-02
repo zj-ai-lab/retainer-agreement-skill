@@ -2,6 +2,13 @@
 
 本仓库遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)；版本号与技能 `SKILL.md` frontmatter 一致。
 
+## [2.0.1] - 2026-09-02
+
+- README 改为面向非技术使用者的大白话版本，附可整段复制发给 AI 助手的安装 / 试跑指令、测试清单与常见问题。
+- 新增 `examples/make_demo_sample.py`：生成一份虚构示例合同，没有现成模板也能试跑初始化。
+- `init_template.py`：map 字段支持 `leftover_ok`（样本值是通用词、固定文字里还会再出现时不视为残留）。
+- 新增测试反馈 issue 模板。
+
 ## [2.0.0] - 2026-09-02
 
 首个公开版本（内部 v1.x 自 2026-05 起在律所实务中迭代，本版为面向公开发布的重构）。

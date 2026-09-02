@@ -60,7 +60,7 @@ from docx.text.paragraph import Paragraph
 from lxml import etree
 
 SKILL_NAME = 'retainer-agreement'
-SKILL_VERSION = '2.0.0'
+SKILL_VERSION = '2.0.1'
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = SCRIPT_DIR.parent / 'templates'
