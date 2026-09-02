@@ -1,0 +1,9 @@
+retainer-agreement · 委托代理合同 Agent Skill
+Copyright (c) 2026 zj-ai-lab
+
+许可范围：
+- 程序性文件（scripts/、tests/ 下的 .py 及 examples/ 数据）依 Apache License 2.0 许可，见 LICENSE。
+- 文本内容（SKILL.md、README.md、templates/README.md、CHANGELOG.md）依 CC BY-SA 4.0 许可，见 LICENSE-CC-BY-SA-4.0。
+
+本仓库不包含任何律师事务所的合同模板。使用者自行初始化的模板包（templates/<slug>/）属使用者所有，
+不受本仓库许可约束，且已被 .gitignore 排除。本技能生成的文书由使用律师自行审核并承担执业责任。

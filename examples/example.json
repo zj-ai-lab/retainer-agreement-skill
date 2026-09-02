@@ -1,0 +1,18 @@
+{
+  "year": 2026,
+  "contract_num": "",
+  "cover_date_cn": "",
+  "client_name": "张三",
+  "client_id": "110101198001011234",
+  "client_address": "北京市朝阳区示例路1号",
+  "client_phone": "13800138000",
+  "opponent": "李四",
+  "case_matter": "民间借贷纠纷",
+  "lawyer": "示例律师团队",
+  "proc_codes": "1、2",
+  "fee_clauses": [
+    "一审阶段：在签订本合同之日，甲方向乙方支付律师代理费人民币叁万元（¥30000）。",
+    "二审阶段：在收到对方上诉状或甲方确定上诉之日一次性支付律师服务费壹万伍仟元（¥15000）。"
+  ],
+  "output_path": "/tmp/retainer_dryrun_example.docx"
+}

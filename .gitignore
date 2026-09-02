@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+# 使用者自己的模板包：律所资料，永不提交
+templates/*/
+!templates/README.md
+# 初始化中间文件与产物
+map.json
+*.docx
