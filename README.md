@@ -1,67 +1,129 @@
-# retainer-agreement · 委托代理合同 Agent Skill
+# 委托代理合同 AI 技能（retainer-agreement）
 
-给 AI 编程 / 办公 Agent（Claude Code、Codex、Kimi Code 等支持 SKILL.md 的运行时）用的技能：
-**用你们所自己的合同模板**，在面谈现场对话式出一份《委托代理合同》Word（.docx）。
+> 测试阶段 v2.0.0。用起来有任何不顺，请到 [Issues](../../issues) 说一声（有现成的反馈模板）。反馈时**不要上传真实合同和当事人信息**。
 
-- **模板是你的**：技能本身不带任何律所的合同。第一次使用时 Agent 会用一句话向你要一份常用的合同 Word，
-  自动找出每次要填的位置（当事人、案由、承办律师、收费条款……），装成模板包；版式、字体、下划线全按你的原样。
-- **对话式填写**：Agent 按模板里的空位一项项口语化地问，不用填表；日期默认当天，合同编号留给律所系统回填。
-- **收费条款润色 + 风险审查**：把"签合同付三万、开庭前付两万"这类口述改写成正式条款（含大写金额），
-  并主动追问代理范围、外部触发条件的兜底期限、后续阶段衔接、风险代理上限；婚姻继承 / 刑事等禁止风险代理的案件命中即改写。
-- **本地运行、不上传**：全部在你的机器上跑，只依赖 `python-docx`。
+## 这是什么
 
-## 安装
+一个装给 AI 助手（Claude Code、Codex、Kimi Code、WorkBuddy 这类能读 `SKILL.md` 的助手）的"技能"。装上以后，你对助手说一句**"做一份委托合同"**，它就会像助理一样一项项问你：委托人是谁、对方是谁、什么纠纷、律师费怎么收……问完直接给你一份可以打印签字的 Word 合同。
+
+三件事说清楚：
+
+1. **合同是按你们所自己的模板出的。** 这个技能本身不带任何律所的合同。第一次用的时候，助手会向你要一份你们所常用的委托代理合同 Word，它自己看明白哪些地方每次要改（当事人、案由、承办律师、收费条款），以后就照着这份出。字体、格式、下划线全跟原样一样。
+2. **收费条款帮你把关。** 你口头说"签合同付三万、开庭前付两万"，它会写成正式条款（带大写金额），还会追问几句：这笔钱是只管一审还是含二审？"开庭前"要是一直不开庭怎么办？调解失败转诉讼另算吗？婚姻、继承、刑事这类法律禁止风险代理的案子，它会拦住不合规的写法。
+3. **全在你自己电脑上跑，不上传。** 合同模板和当事人信息不会离开你的电脑。
+
+## 你需要准备什么
+
+- 一个能跑技能的 AI 助手（Claude Code / Codex / Kimi Code / WorkBuddy 等）。
+- 电脑上有 Python（3.10 以上）。没有的话让助手帮你装。
+- 一份你们所常用的委托代理合同 Word 文件（签过的旧合同也行）。手头没有可以先用我们提供的虚构样本试。
+
+## 怎么安装
+
+### 方式一：让 AI 助手帮你装（推荐）
+
+把下面这段话**整段复制**，发给你的 AI 助手（WorkBuddy、Claude Code、Codex 都行）：
+
+```text
+请帮我安装一个叫 retainer-agreement（委托代理合同）的 Agent 技能，按下面步骤做：
+1. 把仓库 https://github.com/zj-ai-lab/retainer-agreement-skill 克隆到本机（git clone）；如果没有 git，就下载 zip 解压。
+2. 确认本机有 Python 3.10 以上，然后用 pip 安装 python-docx。
+3. 把克隆下来的整个目录放到你加载技能的目录里，目录名叫 retainer-agreement。
+   例如 Claude Code 是 ~/.claude/skills/retainer-agreement，Codex 是 ~/.codex/skills/retainer-agreement；
+   如果你是别的运行时，放到你自己的技能目录里。
+4. 进入那个目录运行 python3 tests/test_render.py（Windows 用 python），确认最后一行是 ALL PASS。
+5. 装好后回我一句"装好了"，并提醒我：第一次使用要先给你一份我们所常用的委托代理合同 Word。
+```
+
+### 方式二：自己动手（三条命令）
 
 ```bash
 git clone https://github.com/zj-ai-lab/retainer-agreement-skill.git
 pip install python-docx
-
-# Claude Code
-ln -s "$PWD/retainer-agreement-skill" ~/.claude/skills/retainer-agreement
-# Codex
-cp -R retainer-agreement-skill ~/.codex/skills/retainer-agreement
+ln -s "$PWD/retainer-agreement-skill" ~/.claude/skills/retainer-agreement   # Claude Code；Codex 换成 ~/.codex/skills/
 ```
 
-其他运行时：把仓库目录放进它加载 skill 的位置即可（目录内含 `SKILL.md`）。
+装完重开一次助手的会话。
 
-## 第一次使用：装模板
+## 第一次用：把你们所的合同装成模板
 
-对 Agent 说"做一份委托合同"。它发现还没有模板，会请你**给一份你们所常用的合同 Word**——签过的旧合同也行。
-然后它会用人话跟你确认："我准备把这几处改成每次填写的位置：委托人姓名、身份证号……律师费那两段按分期逐段生成，
-有没有漏的或不该动的？"确认后它生成模板包，并干跑一份示例合同请你在 Word 里过目。看过点头就装好了。
+对助手说：
 
-- 旧合同里的当事人信息只用来定位空位，**不会保存进技能**；生成的模板里全是占位符。
-- 刑事辩护、常年顾问等其他合同：再给一份对应的 Word，同样流程装第二个模板；以后出件时 Agent 会先问用哪份。
+```text
+做一份委托合同
+```
 
-## 之后每次出件
+它发现还没有模板，会请你给一份合同 Word。你把文件给它，它会用大白话跟你确认，大意是："我准备把这几处改成每次填写的位置：委托人姓名、身份证号、住址、电话、对方当事人、案由、承办律师、代理程序；律师费那两段以后按你说的分期逐段生成。有没有我漏掉的，或者其实是固定文字不该动的？"
 
-"做个委托合同，客户来了" → Agent 按模板问字段 → 你口述收费方式 → 它润色成条款并做风险审查 → 出 .docx。
+你说"对"或者指出哪里不对。它还会顺便问：承办律师默认写谁？发票默认普票？然后它会生成一份填了"张三、李四"的示例合同让你在 Word 里打开看一眼：格式对不对、下划线连不连续。你点头，模板就装好了。
 
-## 数据与隐私
+- 旧合同里的当事人信息只是用来找位置的，**不会留在技能里**。
+- 刑事辩护合同、常年法律顾问合同想也用？再给一份对应的 Word，同样流程再装一个。以后出件时它会先问你用哪份。
 
-| 事项 | 说明 |
+**手头没有合同，想先试试？** 把这段话发给助手：
+
+```text
+我还没有合同模板，请先在 retainer-agreement 技能目录里运行 python3 examples/make_demo_sample.py 生成一份虚构的示例合同，
+然后用这份示例合同帮我做一份委托合同，把模板初始化流程完整走一遍。
+```
+
+## 以后每次用
+
+```text
+做一份委托合同，客户来了
+```
+
+助手会按模板一项项问（委托人四项、对方、案由、代理哪些程序），你口述律师费怎么收，它写成条款、做完风险追问，然后出一份 Word，告诉你文件在哪。一般两三分钟。
+
+它会主动追问的几件事（这些都是真实签约里容易留坑的地方）：
+
+| 它问 | 为什么 |
 |---|---|
-| 运行位置 | 本机；脚本不联网 |
-| 你的合同模板 | 在 `templates/<slug>/`，已被 `.gitignore` 排除，不会被提交到任何仓库 |
-| 样本合同原件 | 不复制进技能；初始化的隐私清扫会拦截残留的当事人信息 |
-| 本仓库 | 不含任何律所的模板；示例数据全部脱敏（张三 / 李四 / 13800138000） |
+| 这笔费用只管一审，还是含二审、执行？ | 代理范围不写清，后面加钱没依据 |
+| "开庭前付"要是一直不开庭，第二笔怎么办？ | 外部条件要有兜底期限 |
+| 调解失败转诉讼 / 一审败诉上二审，费用另算吗？ | 后续阶段要有衔接条款 |
+| 风险代理有没有上限、有没有保底？ | 没上限的风险代理容易出争议 |
+| 婚姻、继承、刑事案：律师费有没有和结果挂钩？ | 这些案件法律禁止风险代理，它会改成按程序节点付款 |
 
-## 目录
+## 数据安全，一句话版
+
+模板在你电脑里的 `templates/` 文件夹，仓库设置里已经排除，永远不会被提交到任何地方；当事人信息只在你电脑上出现在最后那份 Word 里；本仓库不含任何律所的模板，示例全是虚构的。
+
+## 帮我们测一测
+
+按顺序试，哪一步不对就开 issue：
+
+1. 说"做一份委托合同"，它应该先要模板，而不是自己编一份。
+2. 给它合同后，它应该用大白话跟你确认位置，不应该让你看代码或 JSON。
+3. 它生成的示例合同，在 Word 里看：格式和原合同一样，下划线是一条连续的线。
+4. 正式出件时，你口述收费后它应该追问上面表格里的问题；你故意说"婚姻案，判不离不收费"，它应该拦下来改写。
+5. 打开 `templates/` 里生成的模板文件，里面不应该还有你样本里的任何当事人信息。
+6. 再装第二份合同，出件时它应该先问用哪份。
+
+反馈请说清：用的哪个助手和模型、卡在第几步、你说了什么、它做了什么、你期望什么。合同版式用文字描述即可。
+
+## 常见问题
+
+- **它直接写了一份合同，没有要模板。** 技能没被加载。检查目录名是不是 `retainer-agreement`、放对位置没有，然后重开会话。
+- **它说"没有任何模板包"。** 还没装模板，回到"第一次用"。
+- **它说"必填字段为空"。** 有信息没问全，让它接着问。
+- **它说模板"指纹不符"。** 你在 Word 里改过模板，让它运行 `python3 scripts/init_template.py relock templates/<模板名>` 重新锁定。
+- **它提示收费条款"命中红线词"。** 婚姻继承 / 刑事案必须改写；一般民商事案确认过上限和保底就可以继续。
+
+## 给技术人员的目录说明
 
 ```
-SKILL.md                    Agent 工作流（初始化 → 收集字段 → 收费条款润色与风险审查 → 渲染 → 自检 → 交付）
-scripts/render.py           manifest 驱动的渲染引擎
-scripts/inspect_template.py 检视合同 Word 的结构（供 Agent 判断变量位置）
-scripts/init_template.py    合同样本 → 模板包；relock 重锁指纹
-scripts/num2cn.py           金额大写
-templates/                  你的模板包放这里（见 templates/README.md）
-examples/example.json       脱敏示例数据
-tests/test_render.py        回归测试（python3 tests/test_render.py；无私有模板包的用例自动跳过）
+SKILL.md                     助手的工作流说明（初始化 → 收集字段 → 收费条款润色与风险审查 → 渲染 → 自检 → 交付）
+scripts/render.py            渲染引擎（render.py --list-templates 看已装模板）
+scripts/inspect_template.py  检视合同 Word 的结构，供助手判断变量位置
+scripts/init_template.py     合同样本 → 模板包；relock 重锁指纹
+scripts/num2cn.py            金额大写
+examples/make_demo_sample.py 生成虚构示例合同
+examples/example.json        虚构示例数据
+templates/                   你的模板包放这里（见 templates/README.md）
+tests/test_render.py         回归测试
 ```
 
 ## 许可
 
-- 代码（`scripts/`、`tests/`）：[Apache-2.0](LICENSE)
-- 文本（`SKILL.md`、`README.md`、`templates/README.md`）：[CC BY-SA 4.0](LICENSE-CC-BY-SA-4.0)
-
-详见 [NOTICE](NOTICE)。本仓库由 [zj-ai-lab](https://github.com/zj-ai-lab) 维护；欢迎 issue，PR 请先开 issue 讨论。
+代码（`scripts/`、`tests/`、`examples/*.py`）按 [Apache-2.0](LICENSE)；文本（`SKILL.md`、`README.md`、`templates/README.md`）按 [CC BY-SA 4.0](LICENSE-CC-BY-SA-4.0)，详见 [NOTICE](NOTICE)。本仓库由 [zj-ai-lab](https://github.com/zj-ai-lab) 维护。技能生成的文书请由执业律师自行审核，责任由使用者承担。

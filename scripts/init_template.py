@@ -15,6 +15,8 @@ map.json（agent 与使用者用自然语言确认后写出；使用者不需要
      "at": [{"para": 16, "text": "张三"}, {"para": 42, "text": "张三"}]},
     {"key": "INVOICE_TYPE", "label": "发票类型", "default": "1",
      "at": [{"para": 40, "text": "1", "context": "类型为  1  （"}]},      # context：段内定位用的更长片段
+    {"key": "PROC_CODES", "label": "代理程序", "required": true, "leftover_ok": true,
+     "at": [{"para": 31, "text": "一审"}]},                                 # leftover_ok：样本值是通用词，固定文字里再出现不算残留
     {"key": "FEE_CLAUSES", "label": "律师费条款", "kind": "paragraphs", "underline": "auto", "required": true,
      "at": [{"para": 34}, {"para": 35}]}                                   # 整段：首段成锚点，其余删除
   ]
@@ -373,7 +375,8 @@ def init_pack(docx_path: Path, map_path: Path, out_dir: Path, allow_leftover=Fal
             needle = at.get('text')
             if not needle:
                 raise InitError(f'field {fd["key"]} 的 placement 缺 text：{at}')
-            samples.append(needle)
+            if not fd.get('leftover_ok'):      # 通用词（如「一审」「普通发票」）允许在固定文字里再出现，不参与隐私清扫
+                samples.append(needle)
             r_el = replace_in_paragraph(p_el, needle, token, at.get('context'))
             layout = normalize_blank_row(p_el, r_el, token)
             loc = at.get('para', at.get('cell'))
